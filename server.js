@@ -33,9 +33,9 @@ app.get('/',function (req,res){
 
 app.get('/admin', async function(req,res){
     //if user has admin
-        res.render('admin');    
+        res.render('admin', await getAllUsers());    
     //else
-        res.redirect('/');
+        // res.redirect('/');
 });
 
 app.get('/test',async function(req,res){
@@ -50,6 +50,7 @@ app.get('/test',async function(req,res){
     // getQuestionDataFromMongo();
     // var user = await getUserByUserName("billys");
     // console.log(user);
+    console.log(await getAllUsers());
     res.render('index');
 
 });
@@ -133,4 +134,12 @@ async function getUserByUserName(name){
     );
     client.close();
     return user;
+}
+
+async function getAllUsers(){
+    await client.connect();
+    var users ={};
+    users['users'] = await client.db(dbName).collection("users").find().toArray();
+    client.close();
+    return users;
 }

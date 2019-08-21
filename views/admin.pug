@@ -2,3 +2,13 @@ extends layout.pug
 
 block content
     h1="admin Page"
+    each user in users
+        div=user.username
+        div=user.password
+        div=user.email
+        div=user.age
+        div=user.answer0
+        div=user.answer1
+        div=user.answer2
+        div=user._id
+        br
