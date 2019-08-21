@@ -1,0 +1,30 @@
+extends layout.pug
+
+block content
+    h1="Create new user"
+
+    form(action='register' method='post')
+        div
+            label="Username: "
+            input(name = "username" type="text" required)
+        div
+            label="Password: "
+            input(name = "password" type="password" required)
+        div
+            label="Age: "
+            input(name = "age" type="text" required)
+        div
+            label="Email: "
+            input(name = "email" type="email" required)
+
+        h1="---------------"
+        div(class="questions")
+            each question, index in questions
+                div(class="question-holder")
+                    div=question.question
+                each answer, num in question.answers
+                    div(class="question-choice")
+                        input(type="radio" name=("answer"+index) value=num required)
+                        label=" "+num+" "+answer.a
+                br
+        input(type="submit" value="Submit")

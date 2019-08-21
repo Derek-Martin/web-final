@@ -1,0 +1,42 @@
+html,
+body{
+    padding:0;
+    margin:0;
+    width:100%;
+    height:100%;
+}
+
+nav{
+    position: sticky;
+    top:0;
+    width:100%;
+    background-color: #303030;
+    height:50px;
+    border-radius: 0px 0px 10px 10px;
+}
+
+.nav-button{
+    margin: 5px;
+    height: 40px;
+    display: inline-block;
+    border-radius: 5px;
+    background-color: #505050;
+    color:white;
+    border: 2px solid black;
+    font-size: 1em;
+}
+.right{
+    float: right;
+}
+.nav-button:hover{
+    background-color: #707070;
+    border: 2px solid white;
+}
+
+.hidden{
+    display: none;
+}
+
+.content{
+    padding:5px;
+}

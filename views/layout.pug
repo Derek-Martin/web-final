@@ -1,0 +1,15 @@
+html
+    head
+        title="Web Final"
+        link(href="styles/style.css" rel="stylesheet" type="text/css")
+        script(src = "/scripts/layout.js")
+    body(class = "body")
+        nav
+            button(class="nav-button" onclick="redirect('')")="Home"
+            button(class="nav-button right" onclick="redirect('login')")="Login"
+            div(class="right")
+                button(class="nav-button" onclick="redirect('register')")="Register"
+                button(class="nav-button hidden" onclick="redirect('logout')")="Logout"
+        div(class = "content")
+            block content
+    footer

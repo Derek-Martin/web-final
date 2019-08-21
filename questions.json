@@ -1,0 +1,31 @@
+{
+    "questions":[
+        {
+            "question":"What is your favorite phone brand?",
+            "answers":[
+                {"a":"Samsung","count": 0},
+                {"a":"Apple","count": 0},
+                {"a":"Google","count": 0},
+                {"a":"Motorola","count": 0}
+            ]
+        },
+        {
+            "question":"What is the color of the sky?",
+            "answers":[
+                {"a":"Black","count": 0},
+                {"a":"Purple","count": 0},
+                {"a":"Red","count": 0},
+                {"a":"Blue","count": 0}
+            ]
+        },
+        {
+            "question":"Is there a pineapple in the backseat of your car?",
+            "answers":[
+                {"a":"Yes","count": 0},
+                {"a":"No","count": 0},
+                {"a":"Maybe","count": 0},
+                {"a":"Excuse me","count": 0}
+            ]
+        }
+    ]
+}
