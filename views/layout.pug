@@ -1,3 +1,6 @@
+//- We need two bools passed in for the nav buttons
+//- admin
+//- loggedIn
 html
     head
         title="Web Final"
@@ -6,10 +9,14 @@ html
     body(class = "body")
         nav
             button(class="nav-button" onclick="redirect('')")="Home"
-            button(class="nav-button right" onclick="redirect('login')")="Login"
+            if(admin)
+                button(class="nav-button" onclick="redirect('admin')")="Admin"
             div(class="right")
-                button(class="nav-button" onclick="redirect('register')")="Register"
-                button(class="nav-button hidden" onclick="redirect('logout')")="Logout"
+                if(loggedIn)
+                    button(class="nav-button hidden" onclick="redirect('logout')")="Logout"
+                else
+                    button(class="nav-button" onclick="redirect('login')")="Login"
+                    button(class="nav-button" onclick="redirect('register')")="Register"
         div(class = "content")
             block content
     footer

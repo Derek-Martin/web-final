@@ -6,7 +6,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
-
 app.set('view engine','pug');
 
 const MongoClient = require('mongodb').MongoClient;
@@ -15,6 +14,7 @@ const ObjectId = require('mongodb').ObjectID;
 const client = new MongoClient(uri,{useNewUrlParser : true, useUnifiedTopology: true});
 const dbName = "webFinal";
 
+var bcrypt = require('bcryptjs');
 
 const session = require('express-session');
 app.use(session({
@@ -22,15 +22,21 @@ app.use(session({
     cookie:{}
 }));
 
-var bcrypt = require('bcryptjs');
 
 
 
 app.get('/',function (req,res){
     // console.log(getQuestionData());
-    res.render('index');
+    var object = {admin:true};
+    res.render('index',object);
 });
 
+app.get('/admin', async function(req,res){
+    //if user has admin
+        res.render('admin');    
+    //else
+        res.redirect('/');
+});
 
 app.get('/test',async function(req,res){
     // client.connect(err => {
@@ -42,30 +48,53 @@ app.get('/test',async function(req,res){
     //   });
     
     // getQuestionDataFromMongo();
-    var user = await getUserByUserName("billys");
-    console.log(user);
+    // var user = await getUserByUserName("billys");
+    // console.log(user);
     res.render('index');
 
 });
 
+app.get('/login',function(req,res){
+    res.render('login');
+});
+app.post('/login',async function(req,res){
+    var user = req.body;
+    var other = await getUserByUserName(user.username);
+
+    var valid = bcrypt.compareSync(user.password, other.password);
+    if(valid){
+        //TODO create session here
+        res.redirect('/');
+    }else{
+        res.redirect('/login');
+    }
+});
+
+
+app.get('/register',function(req,res){
+    res.render('register',getQuestions());
+});
 app.post('/register', async function(req,res){
     var person = req.body;
     person.password = bcrypt.hashSync(person.password);
     insertUser(person);
 
-    //True or false
-    console.log(bcrypt.compareSync("bob", person.password));
+    //TODO update mongo question values based off their answer
+        //pull -> change -> update
+
+    //TODO session crap
+
+    //TODO Log them in
     
-    //session crap
-    
-    console.log(person);
+    // console.log(person);
     res.redirect('/');
 });
 
-app.get('/register', function(req,res){
-    res.render('register',getQuestions());
-});
+app.get('/logout', function(req,res){
 
+    //TODO kill session
+    res.redirect('');
+})
 
 var server = app.listen(8080, function(){
     var host = server.address().address;
@@ -74,7 +103,7 @@ var server = app.listen(8080, function(){
 })
 
 
-//local file only
+//local file only   
 function getQuestions(){
     var obj = require(__dirname+"/questions.json");
     return obj;
@@ -84,7 +113,7 @@ function getQuestions(){
 async function getQuestionDataFromMongo(){
     await client.connect();
     var questionsData = await client.db(dbName).collection("questions").findOne();
-    await client.close();
+    client.close();
 
     return questionsData;
 }
@@ -92,7 +121,7 @@ async function getQuestionDataFromMongo(){
 async function insertUser(user){
     await client.connect();
     await client.db(dbName).collection("users").insertOne(user);
-    await client.close();
+    client.close();
 }
 
 async function getUserByUserName(name){
