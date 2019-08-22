@@ -9,11 +9,15 @@ html
     body(class = "body")
         nav
             button(class="nav-button" onclick="redirect('')")="Home"
+            if(loggedIn)
+                button(class="nav-button" onclick="redirect('profile')")="Profile"
             if(admin)
                 button(class="nav-button" onclick="redirect('admin')")="Admin"
+            
             div(class="right")
                 if(loggedIn)
-                    button(class="nav-button hidden" onclick="redirect('logout')")="Logout"
+                    div(class="nav-username")="Welcome "+username
+                    button(class="nav-button" onclick="redirect('logout')")="Logout"
                 else
                     button(class="nav-button" onclick="redirect('login')")="Login"
                     button(class="nav-button" onclick="redirect('register')")="Register"

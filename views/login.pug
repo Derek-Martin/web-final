@@ -1,11 +1,12 @@
 extends layout.pug
 
 block content
+    h1="Login"
     form(action='login' method='post')
-        div
-            label="Username: "
-            input(name = "username" type="text" required)
-        div
-            label="Password: "
-            input(name = "password" type="password" required)
-        input(type="submit" value="Login")
+        div(class='form')
+            div(class='input-holder')
+                input(class="input" name = "username" placeHolder="username" type="text" required)
+            div(class='input-holder')
+                input(class="input" name = "password" placeHolder="password" type="password" required)
+            div(class='input-holder')
+                input(class='submit' type="submit" value="Login")

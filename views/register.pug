@@ -4,31 +4,26 @@ block content
     h1="Create new user"
 
     form(action='register' method='post')
-        div
-            label="Username: "
-            input(name = "username" type="text" required)
-        div
-            label="Password: "
-            input(name = "password" type="password" required)
-        div
-            label="Age: "
-            input(name = "age" type="text" required)
-        div
-            label="Email: "
-            input(name = "email" type="email" required)
-        div
-            label="Role: "
-            select(name="role")
-                option(value = "admin")="Admin"
-                option(value = "user")="User"
-        br
-        div(class="questions")
-            each question, index in questions
-                div(class="question-holder")
-                    div=question.question
-                each answer, num in question.answers
-                    div(class="question-choice")
-                        input(type="radio" name=("answer"+index) value=num required)
-                        label=" "+num+" "+answer.a
-                br
-        input(type="submit" value="Submit")
+        div(class="form")
+            div(class="input-holder")
+                input(class ="input" name = "username" type="text" placeHolder = "username" required)
+                input(class ="input" name = "password" type="password" placeHolder = "password" required)
+            div(class="input-holder")
+                input(class ="input" name = "age" type="text" placeHolder = "age" required)
+                input(class ="input"  name = "email" type="email" placeHolder = "email" required)
+            div(class="input-holder")
+                select(class="input" name="role")
+                    option(value = "user")="User"
+                    option(value = "admin")="Admin"
+            br
+            div(class="questions-holder")
+                each question, index in questions
+                    div(class="question-holder")
+                        div=question.question
+                    each answer, num in question.answers
+                        div(class="question-choice")
+                            input(type="radio" name=("answer"+index) value=num required)
+                            label=" "+num+" "+answer.a
+                    br
+            div(class="input-holder")
+                input(class="submit" type="submit" value="Submit")

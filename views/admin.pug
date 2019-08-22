@@ -1,14 +1,23 @@
 extends layout.pug
 
 block content
-    h1="admin Page"
-    each user in users
-        div=user.username
-        div=user.password
-        div=user.email
-        div=user.age
-        div=user.answer0
-        div=user.answer1
-        div=user.answer2
-        div=user._id
-        br
+    h1="Admin"
+    div(class="user-holder")
+        each user in users
+            div(class="table-holder")
+                table(class="admin-table")
+                    tr
+                        td
+                            div="Username: "+user.username
+                        td
+                            div(class="text-right")="Status: "+user.status
+                    tr
+                        td
+                            div="Email: "+user.email
+                        td
+                            div(class="text-right")="Age: "+user.age
+                if(user.status == "active")
+                    button(class="admin-status-input deactivate")="Suspend"
+                else
+                    button(class="admin-status-input activate")="Activate"
+            br

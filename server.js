@@ -24,18 +24,35 @@ app.use(session({
 
 
 
+function getSessionObject(req){
+    var object = {};
+    if(req.session == undefined || req.session.user == undefined)
+    {
+        object['admin'] = false;
+        object['loggedIn'] = false;
+        return object;
+    }
+    var user = req.session.user;
+    object['admin'] = user.role == 'admin';
+    object['loggedIn'] = user != undefined;
+    object['username'] = user.username;
+    return object;
+}
 
 app.get('/',function (req,res){
-    // console.log(getQuestionData());
-    var object = {admin:true};
-    res.render('index',object);
+    res.render('index',getSessionObject(req));
 });
 
 app.get('/admin', async function(req,res){
-    //if user has admin
-        res.render('admin', await getAllUsers());    
-    //else
-        // res.redirect('/');
+    var obj = getSessionObject(req);
+    obj['users'] = await getAllUsers();
+
+    if(obj.admin){
+        res.render('admin', obj);    
+    }
+    else{
+        res.redirect('/');     
+    }
 });
 
 app.get('/test',async function(req,res){
@@ -63,8 +80,8 @@ app.post('/login',async function(req,res){
     var other = await getUserByUserName(user.username);
 
     var valid = bcrypt.compareSync(user.password, other.password);
-    if(valid){
-        //TODO create session here
+    if(valid && other.status=='active'){
+        req.session.user = other;
         res.redirect('/');
     }else{
         res.redirect('/login');
@@ -77,33 +94,70 @@ app.get('/register',function(req,res){
 });
 app.post('/register', async function(req,res){
     var person = req.body;
+    person.status = 'active';
     person.password = bcrypt.hashSync(person.password);
     insertUser(person);
 
-    //TODO update mongo question values based off their answer
-        //pull -> change -> update
+    var answers = [person.answer0,person.answer1,person.answer2];
+    updateMongoQuestions(answers);
 
-    //TODO session crap
+    req.session.user = person;    
 
-    //TODO Log them in
-    
-    // console.log(person);
     res.redirect('/');
 });
 
 app.get('/logout', function(req,res){
+    req.session.destroy();
+    res.redirect('/');
+});
 
-    //TODO kill session
-    res.redirect('');
-})
+app.get('/profile',function(req,res){
+    res.render('profile');
+});
+app.post('/profile',function(req,res){
+    //after submit on profile page
+    var user = req.body;
+
+    //Change in mongo
+
+    res.redirect('/profile');
+});
 
 var server = app.listen(8080, function(){
     var host = server.address().address;
     var port = server.address().port;
     console.log("Server running on "+host+":"+port);
-})
+});
+
+async function updateMongoQuestions(userSide){
+    var mongoSide = await getQuestionDataFromMongo();
+
+    // console.log("User")
+    // console.log(userSide);
+    // console.log("--------");
+    // console.log("Server")
+    // console.log(mongoSide);
 
 
+    // for(let i = 0;i<mongoSide.questions.length;++i){
+    //     console.log(mongoSide.questions[i].answers);
+    // }
+    // console.log("--------");
+    
+    for(let i = 0;i<userSide.length;++i){
+        mongoSide.questions[i].answers[userSide[i]].count++;
+    }
+
+    // for(let i = 0;i<mongoSide.questions.length;++i){
+    //     console.log(mongoSide.questions[i].answers);
+    // }
+
+    await client.connect();
+    await client.db(dbName).collection("questions").update({},mongoSide);
+    client.close();
+    console.log("mongo Updated");
+
+}
 //local file only   
 function getQuestions(){
     var obj = require(__dirname+"/questions.json");
@@ -138,8 +192,14 @@ async function getUserByUserName(name){
 
 async function getAllUsers(){
     await client.connect();
-    var users ={};
-    users['users'] = await client.db(dbName).collection("users").find().toArray();
+    var users = await client.db(dbName).collection("users").find().toArray();
     client.close();
     return users;
+}
+
+async function updateUserById(){
+    await client.connect();
+    
+
+
 }
