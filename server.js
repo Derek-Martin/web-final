@@ -24,21 +24,6 @@ app.use(session({
 
 
 
-function getSessionObject(req){
-    var object = {};
-    if(req.session == undefined || req.session.user == undefined)
-    {
-        object['admin'] = false;
-        object['loggedIn'] = false;
-        return object;
-    }
-    var user = req.session.user;
-    object['admin'] = user.role == 'admin';
-    object['loggedIn'] = user != undefined;
-    object['username'] = user.username;
-    return object;
-}
-
 app.get('/',function (req,res){
     res.render('index',getSessionObject(req));
 });
@@ -67,7 +52,7 @@ app.get('/test',async function(req,res){
     // getQuestionDataFromMongo();
     // var user = await getUserByUserName("billys");
     // console.log(user);
-    console.log(await getAllUsers());
+    // console.log(await getAllUsers());
     res.render('index');
 
 });
@@ -87,7 +72,6 @@ app.post('/login',async function(req,res){
         res.redirect('/login');
     }
 });
-
 
 app.get('/register',function(req,res){
     res.render('register',getQuestions());
@@ -114,17 +98,19 @@ app.get('/logout', function(req,res){
 app.get('/profile',function(req,res){
     var obj = getSessionObject(req);
     obj['user'] = req.session.user;
+    
+    if(!obj.loggedIn){
+        res.redirect('/');
+        return;
+    }
+
     res.render('profile',obj);
 });
 app.post('/profile',async function(req,res){
-    //after submit on profile page
     var user = req.body;
     var ses = req.session.user;
     var update = {$set: {username: user.username, email: user.email, age: user.age,password: user.password.length>1?bcrypt.hashSync(user.password):ses.password}};
-
-    console.log(update);
     await updateUserById(ses._id, update);
-
     res.redirect('/logout');
 });
 
@@ -134,6 +120,22 @@ var server = app.listen(8080, function(){
     console.log("Server running on "+host+":"+port);
 });
 
+
+
+function getSessionObject(req){
+    var object = {};
+    if(req.session == undefined || req.session.user == undefined)
+    {
+        object['admin'] = false;
+        object['loggedIn'] = false;
+        return object;
+    }
+    var user = req.session.user;
+    object['admin'] = user.role == 'admin';
+    object['loggedIn'] = user != undefined;
+    object['username'] = user.username;
+    return object;
+}
 async function updateMongoQuestions(userSide){
     var mongoSide = await getQuestionDataFromMongo();
     
@@ -150,7 +152,6 @@ function getQuestions(){
     var obj = require(__dirname+"/questions.json");
     return obj;
 }
-
 //just gets the 'questions.json' in mongo
 async function getQuestionDataFromMongo(){
     await client.connect();
@@ -159,13 +160,11 @@ async function getQuestionDataFromMongo(){
 
     return questionsData;
 }
-
 async function insertUser(user){
     await client.connect();
     await client.db(dbName).collection("users").insertOne(user);
     client.close();
 }
-
 async function getUserByUserName(name){
     var user = {};
     await client.connect();
@@ -176,14 +175,12 @@ async function getUserByUserName(name){
     client.close();
     return user;
 }
-
 async function getAllUsers(){
     await client.connect();
     var users = await client.db(dbName).collection("users").find().toArray();
     client.close();
     return users;
 }
-
 async function updateUserById(id,update){
     await client.connect();
     await client.db(dbName).collection('users').updateOne({_id: new ObjectId(id)},update);
