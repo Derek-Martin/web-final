@@ -112,15 +112,20 @@ app.get('/logout', function(req,res){
 });
 
 app.get('/profile',function(req,res){
-    res.render('profile');
+    var obj = getSessionObject(req);
+    obj['user'] = req.session.user;
+    res.render('profile',obj);
 });
-app.post('/profile',function(req,res){
+app.post('/profile',async function(req,res){
     //after submit on profile page
     var user = req.body;
+    var ses = req.session.user;
+    var update = {$set: {username: user.username, email: user.email, age: user.age,password: user.password.length>1?bcrypt.hashSync(user.password):ses.password}};
 
-    //Change in mongo
+    console.log(update);
+    await updateUserById(ses._id, update);
 
-    res.redirect('/profile');
+    res.redirect('/logout');
 });
 
 var server = app.listen(8080, function(){
@@ -131,32 +136,14 @@ var server = app.listen(8080, function(){
 
 async function updateMongoQuestions(userSide){
     var mongoSide = await getQuestionDataFromMongo();
-
-    // console.log("User")
-    // console.log(userSide);
-    // console.log("--------");
-    // console.log("Server")
-    // console.log(mongoSide);
-
-
-    // for(let i = 0;i<mongoSide.questions.length;++i){
-    //     console.log(mongoSide.questions[i].answers);
-    // }
-    // console.log("--------");
     
     for(let i = 0;i<userSide.length;++i){
         mongoSide.questions[i].answers[userSide[i]].count++;
     }
 
-    // for(let i = 0;i<mongoSide.questions.length;++i){
-    //     console.log(mongoSide.questions[i].answers);
-    // }
-
     await client.connect();
     await client.db(dbName).collection("questions").update({},mongoSide);
     client.close();
-    console.log("mongo Updated");
-
 }
 //local file only   
 function getQuestions(){
@@ -197,9 +184,8 @@ async function getAllUsers(){
     return users;
 }
 
-async function updateUserById(){
+async function updateUserById(id,update){
     await client.connect();
-    
-
-
+    await client.db(dbName).collection('users').updateOne({_id: new ObjectId(id)},update);
+    client.close();
 }

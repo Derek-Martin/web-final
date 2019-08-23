@@ -2,3 +2,13 @@ extends layout.pug
 
 block content
     h1="Profile"
+    form(action="/profile",method='post')
+        div(class="form")
+            div(class="input-holder")
+                input(class ="input" name = "username" type="text" placeHolder = "username" required value = user.username)
+                input(class ="input" name = "password" type="password" placeHolder = "password" value='')
+            div(class="input-holder")
+                input(class ="input"  name = "email" type="email" placeHolder = "email" required value = user.email)
+                input(class ="input" name = "age" type="text" placeHolder = "age" required value = user.age)
+            div(class="input-holder")
+                input(class="submit" type="submit" value="Submit")
