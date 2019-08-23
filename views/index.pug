@@ -1,7 +1,9 @@
 extends layout.pug
 
 block content
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js")
+    script(src="/scripts/chart.js")
+    div(style='display: none' id='data')=JSON.stringify(questions)
     h1="INDEX"
 
     canvas(id="chart" width="500" height="500")
-    //- script(src="scripts/chart.js")

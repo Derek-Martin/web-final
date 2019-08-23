@@ -24,8 +24,21 @@ app.use(session({
 
 
 
-app.get('/',function (req,res){
-    res.render('index',getSessionObject(req));
+app.get('/',async function (req,res){
+    var model = getSessionObject(req);
+
+    var questionArray = await getQuestionDataFromMongo();
+    questionArray = questionArray.questions;
+    // console.log(data);
+
+    // console.log("-----");
+    // for(let i = 0;i<questionArray.length;++i){
+    //     console.log(questionArray[i]);
+    // }
+
+
+    model['questions']= questionArray;
+    res.render('index',model);
 });
 
 app.get('/admin', async function(req,res){
@@ -62,7 +75,12 @@ app.get('/login',function(req,res){
 });
 app.post('/login',async function(req,res){
     var user = req.body;
+    console.log(req.body);
     var other = await getUserByUserName(user.username);
+    if(other == null){
+        res.redirect('/login');
+        return;
+    }
 
     var valid = bcrypt.compareSync(user.password, other.password);
     if(valid && other.status=='active'){
