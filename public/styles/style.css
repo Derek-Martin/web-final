@@ -51,7 +51,15 @@ h1{
     width: 100%;
     text-align: center;
 }
-
+h3{
+    width: 100%;
+    text-align: center;
+}
+.charts{
+    width: 33.3333%;
+    height: 500px;
+    display: inline-block
+}
 /* -------- Login/Register --------*/
 
 .form{

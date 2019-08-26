@@ -28,16 +28,7 @@ app.get('/',async function (req,res){
     var model = getSessionObject(req);
 
     var questionArray = await getQuestionDataFromMongo();
-    questionArray = questionArray.questions;
-    // console.log(data);
-
-    // console.log("-----");
-    // for(let i = 0;i<questionArray.length;++i){
-    //     console.log(questionArray[i]);
-    // }
-
-
-    model['questions']= questionArray;
+    model['questions']= questionArray.questions;
     res.render('index',model);
 });
 
@@ -54,18 +45,6 @@ app.get('/admin', async function(req,res){
 });
 
 app.get('/test',async function(req,res){
-    // client.connect(err => {
-    //     const collection = client.db(dbName).collection("questions");
-    //     // perform actions on the collection object
-    //     collection.insertOne(getQuestionData());
-    //     client.close();
-    //     res.redirect('/');
-    //   });
-    
-    // getQuestionDataFromMongo();
-    // var user = await getUserByUserName("billys");
-    // console.log(user);
-    // console.log(await getAllUsers());
     res.render('index');
 
 });
@@ -75,7 +54,6 @@ app.get('/login',function(req,res){
 });
 app.post('/login',async function(req,res){
     var user = req.body;
-    console.log(req.body);
     var other = await getUserByUserName(user.username);
     if(other == null){
         res.redirect('/login');

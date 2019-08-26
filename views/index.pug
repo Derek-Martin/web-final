@@ -5,5 +5,10 @@ block content
     script(src="/scripts/chart.js")
     div(style='display: none' id='data')=JSON.stringify(questions)
     h1="INDEX"
-
-    canvas(id="chart" width="500" height="500")
+    h3="Our users' opinions"
+    div(class='charts')
+        canvas(id="chart0")
+    div(class='charts')
+        canvas(id="chart1")
+    div(class='charts')
+        canvas(id="chart2")
